@@ -116,6 +116,7 @@ This will give an OTU table in the proper format to be fed into JAGS.
 
 The map used can be adapted from metadata for the samples; the map is essentially a specialized metadata file. As described previously, it should have columns SampleID and SourceSink specifying the unique sample ID and whether it is to be treated as a source or a sink, respectively. The SampleID column may have to be renamed (commonly it is named '#SampleID', which R doesn't like). The SourceSink column must be added to tell JAGS what to treat as the source and sink samples. The SourceSink column will usually be created based on other metadata attributes.
 
+
 ```{r}
 #Read first metadata table.
 Metadata <- read_table2(paste0(fileroot, "/example_biom_data/metadata_map.txt"))
@@ -130,7 +131,14 @@ colnames(Metadata)[1] <- "SampleID"
 Metadata
 ```
 
-This is all the data processing necessary; the OTU table and map are now ready to be passed to estimate_proportions.
+To finish processing the data, the metadata and OTU tables passed to estimate_proportions should only contain the necessary rows and columns: the metadata map should contain columns "SampleID", "SourceSink", and a third environment column that keeps track of the type of each sample. The map should only contain the IDs of samples we are using for estimation. The OTU table should also contain only columns for samples used for estimation. The following commands trim out unnecessary rows and columns. Lastly, otu_subs is cast to a data frame. After this, Metadata_subs and otu_subs are ready to be passed to estimate_proportions.
+
+```{r}
+Metadata_subs <- Metadata[5:6,c("SampleID", "SourceSink", "Treatment")]
+
+otu_subs <- example_otus[,Metadata_subs$SampleID]
+otu_subs <- as.data.frame(otu_subs)
+```
 
 Below is an example of estimate_proportions run on our fake, generated OTU table and map that we made using create_data earlier. 
 
@@ -193,11 +201,6 @@ The output correctly estimates that this sample was drawn from source 4.
 To estimate proportions for the real OTU table, we first select only the necessary rows and columns from the metadata map and the OTU table. The OTU table is then cast to a data frame and both are passed to estimate_proportions. Referencing the source guide, we can see that the program estimates that almost none of the sink sample came from the source sample.
 
 ```{r}
-Metadata_subs <- Metadata[5:6,c("SampleID", "SourceSink", "Treatment")]
-
-otu_subs <- example_otus[,Metadata_subs$SampleID]
-otu_subs <- as.data.frame(otu_subs)
-
 otu_samples <- estimate_proportions(otu_subs, Metadata_subs, 1, 1, 1, chains=3, 
                                   adapt=500, burnin=500, samplesPerChain=500,
                                   alpha=.1, beta=.1)
