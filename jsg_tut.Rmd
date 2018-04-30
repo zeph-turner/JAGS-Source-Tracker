@@ -5,7 +5,7 @@ date: "April 21, 2018"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup}
 knitr::opts_chunk$set(echo = TRUE,warning=FALSE, error=FALSE, message=TRUE)
 options(digits=2)
 library(readr)
