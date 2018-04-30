@@ -1,0 +1,15 @@
+
+  model {
+  for(j in 1:nSource) {
+    A[j, 1:nTax] ~ ddirch(rep( 0.1 , nTax))
+  }
+  for(k in 1:nAllSourceObservations) {
+    observation[k] ~ dcat(A[sampleNumber[k], 1:nTax])
+  }
+  for(i in 1:nSeq) {
+    z[i] ~ dcat(B)
+    x[i] ~ dcat(A[z[i], 1:nTax])
+  }
+  B ~ ddirch(rep( 0.1 , nSource))
+  }
+  
