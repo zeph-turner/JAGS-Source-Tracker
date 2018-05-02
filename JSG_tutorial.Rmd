@@ -26,7 +26,7 @@ fileroot <- getwd()
 source(paste0(fileroot, "/jsg_functions.R"))
 ```
 
-The setup() function loads a handful of libraries into the R environment. rjags, reshape2, and mosaic should all be installed via install.packages before this is run. 
+The setup() function loads a handful of libraries into the R environment. rjags, reshape2, dplyr, readr, and mosaic should all be installed via install.packages before using JAGS Source Tracker.
 
 ```{r}
 setup()
