@@ -3,6 +3,7 @@ setup <- function() {
   require(rjags)
   library(reshape2)
   library(mosaic)
+  library(dplyr)
 }
 
 
@@ -99,11 +100,15 @@ write_otu_table <- function(otu_table, nSink, nSource, filename, unkn_count=0) {
 estimate_proportions <- function(otu_table, map, nSink, nSource, unkn_count=0,
                                  chains=4, adapt=500, burnin=500, samplesPerChain=500,
                                  alpha=0.1, beta=10){
+  #Data manipulation to *reduce* number of errors
+  otu_table <- as.data.frame(otu_table)
+  map <- select(map, SampleID, SourceSink)
+  
   #Create unknown columns and rows
   if(unkn_count > 0){
     for(i in 1:unkn_count){
       #Create new row in map for unkn_count
-      map[nrow(map)+1,] <- c(paste("unk", i, sep=""), "source", "unknown")
+      map[nrow(map)+1,] <- c(paste("unk", i, sep=""), "source")
       
       #Add column to OTU table and create column name
       otu_table[,ncol(otu_table)+1] <- rep(0, nrow(otu_table))

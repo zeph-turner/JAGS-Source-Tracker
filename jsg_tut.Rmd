@@ -134,10 +134,9 @@ Metadata
 To finish processing the data, the metadata and OTU tables passed to estimate_proportions should only contain the necessary rows and columns: the metadata map should contain columns "SampleID", "SourceSink", and a third environment column that keeps track of the type of each sample. The map should only contain the IDs of samples we are using for estimation. The OTU table should also contain only columns for samples used for estimation. The following commands trim out unnecessary rows and columns. Lastly, otu_subs is cast to a data frame. After this, Metadata_subs and otu_subs are ready to be passed to estimate_proportions.
 
 ```{r}
-Metadata_subs <- Metadata[5:6,c("SampleID", "SourceSink", "Treatment")]
+Metadata_subs <- Metadata[5:6,]
 
 otu_subs <- example_otus[,Metadata_subs$SampleID]
-otu_subs <- as.data.frame(otu_subs)
 ```
 
 Below is an example of estimate_proportions run on our fake, generated OTU table and map that we made using create_data earlier. 
@@ -198,7 +197,7 @@ summarise_all(samplepost.df, funs(median))
 
 The output correctly estimates that this sample was drawn from source 4.
 
-To estimate proportions for the real OTU table, we first select only the necessary rows and columns from the metadata map and the OTU table. The OTU table is then cast to a data frame and both are passed to estimate_proportions. Referencing the source guide, we can see that the program estimates that almost none of the sink sample came from the source sample.
+To estimate proportions for the real OTU table, first select only the sources and sinks you want to use for estimation from the OTU table. Then pass the map with "SourceSink" and "SampleID" columns along with the subset of the OTU table to estimate_proportions. Referencing the source guide, we can see that the program estimates that almost none of the sink sample came from the source sample.
 
 ```{r}
 otu_samples <- estimate_proportions(otu_subs, Metadata_subs, 1, 1, 1, chains=3, 
